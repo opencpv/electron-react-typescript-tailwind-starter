@@ -19,7 +19,7 @@ interface UserSession {
 }
 
 const ReverseVendingMachine = () => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [sessionActive, setSessionActive] = useState(false);
   const [plasticWeight, setPlasticWeight] = useState(2.45);
   const [canWeight, setCanWeight] = useState(1.87);
@@ -34,7 +34,6 @@ const ReverseVendingMachine = () => {
     {}
   );
   const [detecting, setDetecting] = useState(false);
-  const [loginInput, setLoginInput] = useState("");
   const [showVoucher, setShowVoucher] = useState(false);
   const [voucherData, setVoucherData] = useState(null);
   const [celebration, setCelebration] = useState(false);
@@ -62,19 +61,20 @@ const ReverseVendingMachine = () => {
     { name: "₵20 Cash", points: 750, color: "from-yellow-400 to-amber-500" },
   ];
 
-  const startSession = () => {
-    if (!loginInput.trim()) return;
+  const generateSessionId = () => {
+    return "RVM-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+  };
 
-    const user = loginInput.trim();
-    setCurrentUser(user);
+  const startSession = () => {
+    const sessionId = generateSessionId();
+    setCurrentSessionId(sessionId);
     setSessionActive(true);
     setSessionStats({ plastic: 0, cans: 0, points: 0 });
-    setLoginInput("");
 
-    if (!userHistory[user]) {
+    if (!userHistory[sessionId]) {
       setUserHistory((prev) => ({
         ...prev,
-        [user]: { totalPoints: 0, sessions: [] },
+        [sessionId]: { totalPoints: 0, sessions: [] },
       }));
     }
   };
@@ -116,7 +116,7 @@ const ReverseVendingMachine = () => {
   };
 
   const endSession = () => {
-    if (!sessionActive) return;
+    if (!sessionActive || !currentSessionId) return;
 
     const sessionData = {
       date: new Date().toISOString(),
@@ -127,35 +127,34 @@ const ReverseVendingMachine = () => {
 
     setUserHistory((prev) => ({
       ...prev,
-      [currentUser]: {
-        totalPoints: prev[currentUser].totalPoints + sessionStats.points,
-        sessions: [...prev[currentUser].sessions, sessionData],
+      [currentSessionId]: {
+        totalPoints:
+          (prev[currentSessionId]?.totalPoints || 0) + sessionStats.points,
+        sessions: [...(prev[currentSessionId]?.sessions || []), sessionData],
       },
     }));
 
     setVoucherData({
-      user: currentUser,
+      sessionId: currentSessionId,
       date: new Date(),
       plastic: sessionStats.plastic,
       cans: sessionStats.cans,
       points: sessionStats.points,
-      totalPoints: userHistory[currentUser].totalPoints + sessionStats.points,
+      totalPoints:
+        (userHistory[currentSessionId]?.totalPoints || 0) + sessionStats.points,
     });
 
     setShowVoucher(true);
     setSessionActive(false);
-    setCurrentUser(null);
+    setCurrentSessionId(null);
   };
 
   const printVoucher = () => {
-    // alert("🎉 Voucher printed! Collect your reward at the counter!");
     printVoucherRequest({
-      phone: voucherData.user as string,
+      sessionId: voucherData.sessionId as string,
       bottles: voucherData.plastic as number,
       cans: voucherData.cans as number,
     });
-    // setShowVoucher(false);
-    // setVoucherData(null);
   };
 
   return (
@@ -282,12 +281,12 @@ const ReverseVendingMachine = () => {
         </div>
         <div className="w-full flex flex-col items-center justify-center">
           {!sessionActive ? (
-            /* Login Screen */
+            /* Start Session Screen */
             <div className="max-w-md mx-auto">
               <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 animate-bounce">
-                    <User className="w-8 h-8 text-white" />
+                    <Recycle className="w-8 h-8 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-gray-800 mb-2">
                     Ready to Recycle?
@@ -297,39 +296,25 @@ const ReverseVendingMachine = () => {
                   </p>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="relative">
-                    <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Phone number or username"
-                      value={loginInput}
-                      onChange={(e) => setLoginInput(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none text-lg font-medium transition-colors"
-                    />
-                  </div>
-
-                  <button
-                    onClick={startSession}
-                    disabled={!loginInput.trim()}
-                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-2xl font-bold text-xl hover:from-green-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg"
-                  >
-                    🚀 Start Recycling!
-                  </button>
-                </div>
+                <button
+                  onClick={startSession}
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-2xl font-bold text-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  ♻️ Start Recycling!
+                </button>
               </div>
             </div>
           ) : (
             /* Active Session */
             <div className="max-w-2xl mx-auto space-y-6">
-              {/* Welcome Message */}
+              {/* Session Info */}
               <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 text-center shadow-2xl">
-                <div className="text-3xl mb-2">👋 Welcome back!</div>
-                <div className="text-xl font-bold text-gray-800">
-                  {currentUser}
+                <div className="text-3xl mb-2">♻️ Active Session</div>
+                <div className="text-sm font-mono bg-gray-100 p-2 rounded-lg inline-block">
+                  {currentSessionId}
                 </div>
-                <div className="text-gray-600">
-                  Let's recycle and earn points!
+                <div className="mt-2 text-gray-600">
+                  Recycle items to earn points!
                 </div>
               </div>
 
