@@ -12,10 +12,31 @@ import {
   Star,
 } from "lucide-react";
 import printVoucherRequest from "./lib/print-woucher.api";
+import { io } from "socket.io-client";
+import { useAssets } from "./hooks/useAssets";
 
 interface UserSession {
   totalPoints: number;
   sessions: any[]; // You might want to define a more specific type for sessions
+}
+
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: Buffer) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+}
+
+interface ClientToServerEvents {
+  hello: () => void;
+}
+
+interface InterServerEvents {
+  ping: () => void;
+}
+
+interface SocketData {
+  name: string;
+  age: number;
 }
 
 const ReverseVendingMachine = () => {
@@ -37,8 +58,49 @@ const ReverseVendingMachine = () => {
   const [showVoucher, setShowVoucher] = useState(false);
   const [voucherData, setVoucherData] = useState(null);
   const [celebration, setCelebration] = useState(false);
-
+  const [socket, setSocket] = useState<any>();
+  const [status, setStatus] = useState<
+    "idle" | "session-start" | "session-end"
+  >("idle");
   const detectionTimeoutRef = useRef(null);
+  const assets = useAssets();
+  useEffect(() => {
+    const socket = io("http://localhost:3001");
+
+    socket.on("connect", () => {
+      console.log("Connected to server");
+    });
+    let theStatus = "idle";
+    socket.on("enter", () => {
+      if (theStatus === "idle") {
+        theStatus = "session-start";
+        startSession();
+        console.log("Session started");
+      } else if (theStatus === "session-start") {
+        theStatus = "session-end";
+        endSession();
+        setShowVoucher(true);
+        console.log("Session ended");
+      } else if (theStatus === "session-end") {
+        theStatus = "idle";
+        printVoucherRequest({
+          sessionId: currentSessionId,
+          bottles: sessionStats.plastic,
+          cans: sessionStats.cans,
+        });
+        setShowVoucher(false);
+        setStatus("idle");
+        setCurrentSessionId(null);
+        setSessionActive(false);
+        setSessionStats({ plastic: 0, cans: 0, points: 0 });
+      }
+    });
+
+    setSocket(socket);
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   const rewards = [
     { name: "Pen", points: 50, color: "from-amber-400 to-orange-500" },
@@ -116,7 +178,7 @@ const ReverseVendingMachine = () => {
   };
 
   const endSession = () => {
-    if (!sessionActive || !currentSessionId) return;
+    // if (!sessionActive || !currentSessionId) return;
 
     const sessionData = {
       date: new Date().toISOString(),
@@ -134,27 +196,7 @@ const ReverseVendingMachine = () => {
       },
     }));
 
-    setVoucherData({
-      sessionId: currentSessionId,
-      date: new Date(),
-      plastic: sessionStats.plastic,
-      cans: sessionStats.cans,
-      points: sessionStats.points,
-      totalPoints:
-        (userHistory[currentSessionId]?.totalPoints || 0) + sessionStats.points,
-    });
-
     setShowVoucher(true);
-    setSessionActive(false);
-    setCurrentSessionId(null);
-  };
-
-  const printVoucher = () => {
-    printVoucherRequest({
-      sessionId: voucherData.sessionId as string,
-      bottles: voucherData.plastic as number,
-      cans: voucherData.cans as number,
-    });
   };
 
   return (
@@ -213,49 +255,79 @@ const ReverseVendingMachine = () => {
           </div>
           {/* Quick Stats */}
           <div className="grid grid-cols-2 gap-4 mt-8">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 text-center shadow-lg">
-              <div className="text-3xl font-bold text-green-600">
-                {plasticWeight}kg
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 text-center shadow-lg flex flex-row items-center">
+              <img
+                src={assets.icons.bottleGif}
+                alt=""
+                className="w-[100px] h-[100px]"
+              />
+              <div className="flex flex-col">
+                <div className="text-3xl font-black text-blue-600">
+                  {plasticWeight}kg
+                </div>
+                <div className="text-sm font-bold text-gray-600">
+                  Plastic bottles recycled
+                </div>
               </div>
-              <div className="text-sm text-gray-600">🟢 Plastic Collected</div>
             </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 text-center shadow-lg">
-              <div className="text-3xl font-bold text-blue-600">
-                {canWeight}kg
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 text-center shadow-lg flex flex-row items-center">
+              <img
+                src={assets.icons.canGif}
+                alt=""
+                className="w-[100px] h-[100px]"
+              />
+              <div className="flex flex-col">
+                <div className="text-3xl font-black text-yellow-600">
+                  {canWeight}kg
+                </div>
+                <div className="text-sm font-bold text-gray-600">
+                  Aluminum cans recycled
+                </div>
               </div>
-              <div className="text-sm text-gray-600">🔵 Cans Collected</div>
             </div>
           </div>
           <div className="mb-4"></div>
           {/* Capacity Bars - Simplified */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
-              <div className="text-center mb-2">
-                <span className="text-2xl">🟢</span>
-                <span className="ml-2 font-semibold">
-                  Plastic {plasticCapacity}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-6">
-                <div
-                  className="h-6 bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-500"
-                  style={{ width: `${plasticCapacity}%` }}
-                ></div>
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+              <div className="flex gap- w-full items-center">
+                <img
+                  src={assets.icons.wasteBin}
+                  alt=""
+                  className="w-[60px] h-[60px]"
+                />
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full bg-gray-200 rounded-full h-4">
+                    <div
+                      className="h-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500"
+                      style={{ width: `${plasticCapacity}%` }}
+                    ></div>
+                  </div>
+                  <span className="w-full text-center font-semibold">
+                    Plastic Bin Capacity : {plasticCapacity}%
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
-              <div className="text-center mb-2">
-                <span className="text-2xl">🔵</span>
-                <span className="ml-2 font-semibold">
-                  Aluminum {canCapacity}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-6">
-                <div
-                  className="h-6 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500"
-                  style={{ width: `${canCapacity}%` }}
-                ></div>
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+              <div className="flex gap- w-full items-center">
+                <img
+                  src={assets.icons.wasteBin}
+                  alt=""
+                  className="w-[60px] h-[60px]"
+                />
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full bg-gray-200 rounded-full h-4">
+                    <div
+                      className="h-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all duration-500"
+                      style={{ width: `${canCapacity}%` }}
+                    ></div>
+                  </div>
+                  <span className="w-full text-center font-semibold">
+                    Aluminum Bin Capacity : {canCapacity}%
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -263,7 +335,7 @@ const ReverseVendingMachine = () => {
           <div className="max-w-4xl mx-auto mt-12">
             <div className="text-center mb-6">
               <h3 className="text-3xl font-bold text-white drop-shadow-lg">
-                🎯 Awesome Rewards!
+                Awesome Rewards for Recycling
               </h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -320,17 +392,17 @@ const ReverseVendingMachine = () => {
 
               {/* Session Stats - Big and Bold */}
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl p-6 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
+                <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-3xl p-6 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
                   <div className="text-4xl font-bold mb-2">
                     {sessionStats.plastic}
                   </div>
-                  <div className="text-lg">🟢 Bottles</div>
+                  <div className="text-lg">Plastic bottle</div>
                 </div>
                 <div className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl p-6 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
                   <div className="text-4xl font-bold mb-2">
                     {sessionStats.cans}
                   </div>
-                  <div className="text-lg">🔵 Cans</div>
+                  <div className="text-lg">Alumuminum can</div>
                 </div>
                 <div className="bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl p-6 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
                   <div className="text-4xl font-bold mb-2">
@@ -385,7 +457,7 @@ const ReverseVendingMachine = () => {
         </div>
 
         {/* Voucher Modal */}
-        {showVoucher && voucherData && (
+        {showVoucher && sessionStats.points > 0 && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full transform ">
               <div className="text-center">
@@ -398,28 +470,31 @@ const ReverseVendingMachine = () => {
                 <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg">🟢 Bottles:</span>
+                      <span className="text-lg">Plastic Bottles:</span>
                       <span className="font-bold text-xl">
-                        {voucherData.plastic}
+                        {sessionStats?.plastic || 0}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-lg">🔵 Cans:</span>
+                      <span className="text-lg">Aluminum Cans :</span>
                       <span className="font-bold text-xl">
-                        {voucherData.cans}
+                        {sessionStats?.cans || 0}
                       </span>
                     </div>
                     <div className="border-t pt-3 flex justify-between items-center">
                       <span className="text-xl font-bold">⭐ Points:</span>
                       <span className="font-bold text-3xl text-purple-600">
-                        +{voucherData.points}
+                        +{sessionStats?.points || 0}
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <button
-                  onClick={printVoucher}
+                  onClick={async () => {
+                    printVoucherRequest(voucherData);
+                    setShowVoucher(false);
+                  }}
                   className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-2xl font-bold text-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
                 >
                   <Printer className="w-6 h-6" />
