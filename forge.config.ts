@@ -16,6 +16,10 @@ const config: ForgeConfig = {
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
     new MakerDeb({}),
+    {
+      name: "@electron-forge/maker-deb",
+      config: {},
+    },
   ],
   plugins: [
     new WebpackPlugin({

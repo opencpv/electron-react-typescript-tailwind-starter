@@ -249,8 +249,8 @@ const ReverseVendingMachine = () => {
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-2 drop-shadow-lg">
               KMA Recycle 4 Cash
             </h1>
-            <p className="text-xl text-white/90 drop-shadow">
-              A KNUST SHS STEM Club Project
+            <p className="text-3xl text-white/90 drop-shadow">
+              KNUST SHS STEM Club Project
             </p>
           </div>
           {/* Quick Stats */}
