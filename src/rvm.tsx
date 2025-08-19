@@ -1,16 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  User,
-  Recycle,
-  Gift,
-  Printer,
-  Scale,
-  Phone,
-  Award,
-  Sparkles,
-  Zap,
-  Star,
-} from "lucide-react";
+import { Recycle, Printer, Sparkles, Zap, Star } from "lucide-react";
 import printVoucherRequest from "./lib/print-woucher.api";
 import { io } from "socket.io-client";
 import { useAssets } from "./hooks/useAssets";
