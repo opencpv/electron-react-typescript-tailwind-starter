@@ -92,22 +92,28 @@ const ReverseVendingMachine = () => {
       }
     });
 
+    // ...existing code...
     socket.on("weight", (data) => {
-      const weightData = data;
-      console.log(weightData);
-      setWeights(() => ({
-        plasticBin: weightData.plasticWeight,
-        canBin: weightData.canWeight,
-      }));
-      // Example: assume max capacity is 10kg for both bins
+      // Use the correct property names from your server payload
+      const plasticWeight = Number(data.plasticWeight ?? data.plasticBin ?? 0);
+      const canWeight = Number(data.canWeight ?? data.canBin ?? 0);
+      const maxCapacity = 10; // kg
+
+      setWeights({
+        plasticBin: plasticWeight,
+        canBin: canWeight,
+      });
+
       setbinCapacity({
         plasticBin: Math.min(
           100,
-          Math.round((weightData.plasticBin / 10) * 100)
+          Math.round((plasticWeight / maxCapacity) * 100) || 0
         ),
-        canBin: Math.min(100, Math.round((weightData.canBin / 10) * 100)),
+        canBin: Math.min(100, Math.round((canWeight / maxCapacity) * 100) || 0),
       });
     });
+    // ...existing code...
+
     socket.on("capacity", (data) => {
       setbinCapacity(() => ({
         plasticBin: data.plasticBin,
