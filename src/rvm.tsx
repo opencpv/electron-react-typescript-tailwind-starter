@@ -43,6 +43,12 @@ const ReverseVendingMachine = () => {
   const [userHistory, setUserHistory] = useState<Record<string, UserSession>>(
     {}
   );
+  const [weights, setWeights] = useState({
+    plasticBin: 0,
+    canBin: 0,
+  });
+  const [binCapacity, setbinCapacity] = useState({ plasticBin: 4, canBin: 5 });
+
   const [detecting, setDetecting] = useState(false);
   const [showVoucher, setShowVoucher] = useState(false);
   const [voucherData, setVoucherData] = useState(null);
@@ -53,13 +59,14 @@ const ReverseVendingMachine = () => {
   >("idle");
   const detectionTimeoutRef = useRef(null);
   const assets = useAssets();
+
   useEffect(() => {
     const socket = io("http://localhost:3001");
-
     socket.on("connect", () => {
       console.log("Connected to server");
     });
     let theStatus = "idle";
+
     socket.on("enter", () => {
       if (theStatus === "idle") {
         theStatus = "session-start";
@@ -83,6 +90,29 @@ const ReverseVendingMachine = () => {
         setSessionActive(false);
         setSessionStats({ plastic: 0, cans: 0, points: 0 });
       }
+    });
+
+    socket.on("weight", (data) => {
+      const weightData = data;
+      console.log(weightData);
+      setWeights(() => ({
+        plasticBin: weightData.plasticWeight,
+        canBin: weightData.canWeight,
+      }));
+      // Example: assume max capacity is 10kg for both bins
+      setbinCapacity({
+        plasticBin: Math.min(
+          100,
+          Math.round((weightData.plasticBin / 10) * 100)
+        ),
+        canBin: Math.min(100, Math.round((weightData.canBin / 10) * 100)),
+      });
+    });
+    socket.on("capacity", (data) => {
+      setbinCapacity(() => ({
+        plasticBin: data.plasticBin,
+        canBin: data.canBin,
+      }));
     });
 
     setSocket(socket);
@@ -121,7 +151,7 @@ const ReverseVendingMachine = () => {
     setCurrentSessionId(sessionId);
     setSessionActive(true);
     setSessionStats({ plastic: 0, cans: 0, points: 0 });
-
+    setStatus("session-start");
     if (!userHistory[sessionId]) {
       setUserHistory((prev) => ({
         ...prev,
@@ -139,24 +169,40 @@ const ReverseVendingMachine = () => {
       const isPlastic = Math.random() > 0.4;
       const weight = isPlastic ? 0.025 : 0.015;
       const points = isPlastic ? 2 : 3;
+      const maxCapacityKg = 10; // adjust if your bin max is different
 
-      if (isPlastic && plasticCapacity < 95) {
-        setPlasticWeight((prev) => Math.round((prev + weight) * 100) / 100);
-        setPlasticCapacity((prev) => Math.min(prev + 1, 100));
-        setSessionStats((prev) => ({
-          ...prev,
-          plastic: prev.plastic + 1,
-          points: prev.points + points,
-        }));
-      } else if (!isPlastic && canCapacity < 95) {
-        setCanWeight((prev) => Math.round((prev + weight) * 100) / 100);
-        setCanCapacity((prev) => Math.min(prev + 1, 100));
-        setSessionStats((prev) => ({
-          ...prev,
-          cans: prev.cans + 1,
-          points: prev.points + points,
-        }));
-      }
+      setWeights((prev) => {
+        let newPlastic = prev.plasticBin;
+        let newCan = prev.canBin;
+        if (isPlastic && binCapacity.plasticBin < 95) {
+          newPlastic = Math.round((prev.plasticBin + weight) * 100) / 100;
+          setSessionStats((prevStats) => ({
+            ...prevStats,
+            plastic: prevStats.plastic + 1,
+            points: prevStats.points + points,
+          }));
+        } else if (!isPlastic && binCapacity.canBin < 95) {
+          newCan = Math.round((prev.canBin + weight) * 100) / 100;
+          setSessionStats((prevStats) => ({
+            ...prevStats,
+            cans: prevStats.cans + 1,
+            points: prevStats.points + points,
+          }));
+        }
+        // Update binCapacity based on new weights
+        setbinCapacity({
+          plasticBin: Math.min(
+            100,
+            Math.round((newPlastic / maxCapacityKg) * 100) || 0
+          ),
+          canBin:
+            Math.min(100, Math.round((newCan / maxCapacityKg) * 100)) || 0,
+        });
+        return {
+          plasticBin: newPlastic,
+          canBin: newCan,
+        };
+      });
 
       // Celebration effect
       setCelebration(true);
@@ -252,7 +298,7 @@ const ReverseVendingMachine = () => {
               />
               <div className="flex flex-col">
                 <div className="text-3xl font-black text-blue-600">
-                  {plasticWeight}kg
+                  {weights.plasticBin}kg
                 </div>
                 <div className="text-sm font-bold text-gray-600">
                   Plastic bottles recycled
@@ -267,7 +313,7 @@ const ReverseVendingMachine = () => {
               />
               <div className="flex flex-col">
                 <div className="text-3xl font-black text-yellow-600">
-                  {canWeight}kg
+                  {weights.canBin}kg
                 </div>
                 <div className="text-sm font-bold text-gray-600">
                   Aluminum cans recycled
@@ -289,11 +335,11 @@ const ReverseVendingMachine = () => {
                   <div className="w-full bg-gray-200 rounded-full h-4">
                     <div
                       className="h-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500"
-                      style={{ width: `${plasticCapacity}%` }}
+                      style={{ width: `${binCapacity.plasticBin}%` }}
                     ></div>
                   </div>
                   <span className="w-full text-center font-semibold">
-                    Plastic Bin Capacity : {plasticCapacity}%
+                    Plastic Bin Capacity : {binCapacity.plasticBin}%
                   </span>
                 </div>
               </div>
@@ -310,11 +356,11 @@ const ReverseVendingMachine = () => {
                   <div className="w-full bg-gray-200 rounded-full h-4">
                     <div
                       className="h-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all duration-500"
-                      style={{ width: `${canCapacity}%` }}
+                      style={{ width: `${binCapacity.canBin}%` }}
                     ></div>
                   </div>
                   <span className="w-full text-center font-semibold">
-                    Aluminum Bin Capacity : {canCapacity}%
+                    Aluminum Bin Capacity : {binCapacity.canBin}%
                   </span>
                 </div>
               </div>
@@ -406,7 +452,8 @@ const ReverseVendingMachine = () => {
                 <button
                   onClick={simulateDetection}
                   disabled={
-                    detecting || (plasticCapacity >= 95 && canCapacity >= 95)
+                    detecting ||
+                    (plasticCapacity >= 95 && binCapacity.canBin >= 95)
                   }
                   className={`w-64 h-64 rounded-full text-2xl font-bold text-white shadow-2xl transition-all duration-300 ${
                     detecting
@@ -427,7 +474,7 @@ const ReverseVendingMachine = () => {
                   )}
                 </button>
 
-                {plasticCapacity >= 95 && canCapacity >= 95 && (
+                {plasticCapacity >= 95 && binCapacity.canBin >= 95 && (
                   <p className="text-white text-lg mt-4 bg-red-500 rounded-full px-6 py-2 inline-block">
                     🚨 Machine Full - Contact Staff!
                   </p>
@@ -446,7 +493,7 @@ const ReverseVendingMachine = () => {
         </div>
 
         {/* Voucher Modal */}
-        {showVoucher && sessionStats.points > 0 && (
+        {showVoucher && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full transform ">
               <div className="text-center">

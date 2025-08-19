@@ -19,7 +19,7 @@ const createWindow = (): void => {
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, // Use the webpack constant
       webSecurity: false,
-      devTools: false,
+      // devTools: false,
     },
     autoHideMenuBar: true,
     frame: false,
