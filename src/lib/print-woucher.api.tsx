@@ -19,7 +19,7 @@ const printVoucherRequest = async (data: PrintWoucherProps) => {
     body: payload,
   };
 
-  fetch("http://localhost:8000/print-voucher", requestOptions)
+  fetch("http://192.168.8.111:8080/print-voucher", requestOptions)
     .then((response) => response.text())
     .then((result) => console.log(result))
     .catch((error) => console.error(error));

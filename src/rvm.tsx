@@ -213,6 +213,11 @@ const ReverseVendingMachine = () => {
         sessions: [...(prev[currentSessionId]?.sessions || []), sessionData],
       },
     }));
+    setVoucherData({
+      sessionId: currentSessionId,
+      bottles: sessionStats.plastic,
+      cans: sessionStats.cans,
+    });
 
     setShowVoucher(true);
   };
