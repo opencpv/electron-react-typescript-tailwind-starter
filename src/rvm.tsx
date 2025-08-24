@@ -236,7 +236,7 @@ const ReverseVendingMachine = () => {
               animationDuration: `${3 + Math.random() * 4}s`,
             }}
           >
-            <Sparkles className="w-4 h-4 text-white" />
+            <Sparkles className="w-3 h-3 text-white" />
           </div>
         ))}
       </div>
@@ -245,12 +245,12 @@ const ReverseVendingMachine = () => {
       {celebration && (
         <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
           <div className="animate-bounce">
-            <div className="text-6xl animate-pulse">🎉</div>
+            <div className="text-4xl animate-pulse">🎉</div>
           </div>
           {[...Array(8)].map((_, i) => (
             <Star
               key={i}
-              className={`absolute w-8 h-8 text-yellow-400 animate-ping`}
+              className={`absolute w-6 h-6 text-yellow-400 animate-ping`}
               style={{
                 left: `${45 + Math.random() * 10}%`,
                 top: `${45 + Math.random() * 10}%`,
@@ -261,30 +261,30 @@ const ReverseVendingMachine = () => {
         </div>
       )}
 
-      <div className="relative z-10 p-10 h-screen grid grid-cols-2">
-        <div>
+      <div className="relative z-10 p-3 h-screen grid grid-cols-2 w-full">
+        <div className="flex flex-col justify-center w-full">
           {/* Header */}
-          <div className="text-center mb-4 p-5">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-2xl mb-4 animate-pulse">
-              <Recycle className="w-10 h-10 text-green-500" />
+          <div className="text-center mb-3 p-3">
+            <div className="inline-flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-2xl mb-3 animate-pulse">
+              <Recycle className="w-4 h-4 text-green-500" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-2 drop-shadow-lg">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-lg">
               KMA Recycle 4 Cash
             </h1>
-            <p className="text-3xl text-white/90 drop-shadow">
+            <p className="text-2xl text-white/90 drop-shadow">
               KNUST SHS STEM Club Project
             </p>
           </div>
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 text-center shadow-lg flex flex-row items-center">
+          <div className="grid grid-cols-2 gap-3 mt-6">
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-3 text-center shadow-lg flex flex-row items-center">
               <img
                 src={assets.icons.bottleGif}
                 alt=""
-                className="w-[100px] h-[100px]"
+                className="w-[75px] h-[75px]"
               />
               <div className="flex flex-col">
-                <div className="text-3xl font-black text-blue-600">
+                <div className="text-2xl font-black text-blue-600">
                   {weights.plasticBin}kg
                 </div>
                 <div className="text-sm font-bold text-gray-600">
@@ -292,14 +292,14 @@ const ReverseVendingMachine = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 text-center shadow-lg flex flex-row items-center">
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-3 text-center shadow-lg flex flex-row items-center">
               <img
                 src={assets.icons.canGif}
                 alt=""
-                className="w-[100px] h-[100px]"
+                className="w-[75px] h-[75px]"
               />
               <div className="flex flex-col">
-                <div className="text-3xl font-black text-yellow-600">
+                <div className="text-2xl font-black text-yellow-600">
                   {weights.canBin}kg
                 </div>
                 <div className="text-sm font-bold text-gray-600">
@@ -308,45 +308,45 @@ const ReverseVendingMachine = () => {
               </div>
             </div>
           </div>
-          <div className="mb-4"></div>
+          <div className="mb-3"></div>
           {/* Capacity Bars - Simplified */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-3 shadow-lg">
               <div className="flex gap- w-full items-center">
                 <img
                   src={assets.icons.wasteBin}
                   alt=""
-                  className="w-[60px] h-[60px]"
+                  className="w-[45px] h-[45px]"
                 />
                 <div className="w-full flex flex-col items-center">
-                  <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div className="w-full bg-gray-200 rounded-full h-3">
                     <div
-                      className="h-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500"
+                      className="h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500"
                       style={{ width: `${binCapacity.plasticBin}%` }}
                     ></div>
                   </div>
-                  <span className="w-full text-center font-semibold">
+                  <span className="w-full text-center font-semibold text-sm">
                     Plastic Bin Capacity : {binCapacity.plasticBin}%
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 shadow-lg">
+            <div className="bg-white backdrop-blur-sm rounded-2xl p-3 shadow-lg">
               <div className="flex gap- w-full items-center">
                 <img
                   src={assets.icons.wasteBin}
                   alt=""
-                  className="w-[60px] h-[60px]"
+                  className="w-[45px] h-[45px]"
                 />
                 <div className="w-full flex flex-col items-center">
-                  <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div className="w-full bg-gray-200 rounded-full h-3">
                     <div
-                      className="h-4 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all duration-500"
+                      className="h-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all duration-500"
                       style={{ width: `${binCapacity.canBin}%` }}
                     ></div>
                   </div>
-                  <span className="w-full text-center font-semibold">
+                  <span className="w-full text-center font-semibold text-sm">
                     Aluminum Bin Capacity : {binCapacity.canBin}%
                   </span>
                 </div>
@@ -354,19 +354,19 @@ const ReverseVendingMachine = () => {
             </div>
           </div>
           {/* Rewards Preview - Always Visible */}
-          <div className="max-w-4xl mx-auto mt-12">
-            <div className="text-center mb-6">
-              <h3 className="text-3xl font-bold text-white drop-shadow-lg">
+          <div className="max-w-4xl mx-auto mt-8">
+            <div className="text-center mb-4">
+              <h3 className="text-2xl font-bold text-white drop-shadow-lg">
                 Awesome Rewards for Recycling
               </h3>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {rewards.map((reward, index) => (
                 <div
                   key={index}
-                  className={`bg-gradient-to-br ${reward.color} rounded-2xl p-4 text-center text-white shadow-xl transform hover:scale-105 transition-transform`}
+                  className={`bg-gradient-to-br ${reward.color} rounded-2xl p-3 text-center text-white shadow-xl transform hover:scale-105 transition-transform`}
                 >
-                  <div className="text-2xl font-bold mb-1">{reward.points}</div>
+                  <div className="text-lg font-bold mb-1">{reward.points}</div>
                   <div className="text-sm font-medium">{reward.name}</div>
                 </div>
               ))}
@@ -377,12 +377,12 @@ const ReverseVendingMachine = () => {
           {!sessionActive ? (
             /* Start Session Screen */
             <div className="max-w-md mx-auto">
-              <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-300">
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4 animate-bounce">
-                    <Recycle className="w-8 h-8 text-white" />
+              <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 transform hover:scale-105 transition-transform duration-300">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-3 animate-bounce">
+                    <Recycle className="w-6 h-6 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  <h2 className="text-xl font-bold text-gray-800 mb-2">
                     Ready to Recycle?
                   </h2>
                   <p className="text-gray-600">
@@ -392,7 +392,7 @@ const ReverseVendingMachine = () => {
 
                 <button
                   onClick={startSession}
-                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-2xl font-bold text-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-2xl font-bold text-lg hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   ♻️ Start Recycling!
                 </button>
@@ -400,10 +400,10 @@ const ReverseVendingMachine = () => {
             </div>
           ) : (
             /* Active Session */
-            <div className="max-w-2xl mx-auto space-y-6">
+            <div className="max-w-2xl mx-auto space-y-4">
               {/* Session Info */}
-              <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 text-center shadow-2xl">
-                <div className="text-3xl mb-2">♻️ Active Session</div>
+              <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-4 text-center shadow-2xl">
+                <div className="text-2xl mb-2">♻️ Active Session</div>
                 <div className="text-sm font-mono bg-gray-100 p-2 rounded-lg inline-block">
                   {currentSessionId}
                 </div>
@@ -413,36 +413,36 @@ const ReverseVendingMachine = () => {
               </div>
 
               {/* Session Stats - Big and Bold */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-3xl p-6 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
-                  <div className="text-4xl font-bold mb-2">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-3xl p-4 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
+                  <div className="text-3xl font-bold mb-2">
                     {sessionStats.plastic}
                   </div>
-                  <div className="text-lg">Plastic bottle</div>
+                  <div className="text-base">Plastic bottle</div>
                 </div>
-                <div className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl p-6 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
-                  <div className="text-4xl font-bold mb-2">
+                <div className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl p-4 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
+                  <div className="text-3xl font-bold mb-2">
                     {sessionStats.cans}
                   </div>
-                  <div className="text-lg">Alumuminum can</div>
+                  <div className="text-base">Alumuminum can</div>
                 </div>
-                <div className="bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl p-6 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
-                  <div className="text-4xl font-bold mb-2">
+                <div className="bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl p-4 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
+                  <div className="text-3xl font-bold mb-2">
                     {sessionStats.points}
                   </div>
-                  <div className="text-lg">⭐ Points</div>
+                  <div className="text-base">⭐ Points</div>
                 </div>
               </div>
 
               {/* Insert Button - Hero Element */}
-              <div className="text-center py-8">
+              <div className="text-center py-6">
                 <button
                   onClick={simulateDetection}
                   disabled={
                     detecting ||
                     (plasticCapacity >= 95 && binCapacity.canBin >= 95)
                   }
-                  className={`w-64 h-64 rounded-full text-2xl font-bold text-white shadow-2xl transition-all duration-300 ${
+                  className={`w-48 h-48 rounded-full text-xl font-bold text-white shadow-2xl transition-all duration-300 ${
                     detecting
                       ? "bg-gradient-to-r from-yellow-400 to-orange-500 animate-pulse scale-110"
                       : "bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 hover:scale-110"
@@ -450,19 +450,19 @@ const ReverseVendingMachine = () => {
                 >
                   {detecting ? (
                     <div className="flex flex-col items-center">
-                      <Zap className="w-12 h-12 mb-2 animate-spin" />
+                      <Zap className="w-9 h-9 mb-2 animate-spin" />
                       <div>Detecting...</div>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center">
-                      <div className="text-6xl mb-2">📥</div>
+                      <div className="text-4xl mb-2">📥</div>
                       <div>Insert Item!</div>
                     </div>
                   )}
                 </button>
 
                 {plasticCapacity >= 95 && binCapacity.canBin >= 95 && (
-                  <p className="text-white text-lg mt-4 bg-red-500 rounded-full px-6 py-2 inline-block">
+                  <p className="text-white text-base mt-3 bg-red-500 rounded-full px-4 py-2 inline-block">
                     🚨 Machine Full - Contact Staff!
                   </p>
                 )}
@@ -471,7 +471,7 @@ const ReverseVendingMachine = () => {
               {/* End Session Button */}
               <button
                 onClick={endSession}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-6 rounded-3xl font-bold text-xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-xl"
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 rounded-3xl font-bold text-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-xl"
               >
                 🎁 Finish & Get My Reward!
               </button>
@@ -481,32 +481,32 @@ const ReverseVendingMachine = () => {
 
         {/* Voucher Modal */}
         {showVoucher && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full transform ">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3">
+            <div className="bg-white rounded-3xl shadow-2xl p-6 max-w-sm w-full transform ">
               <div className="text-center">
-                <div className="text-6xl mb-4">🎉</div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                <div className="text-4xl mb-3">🎉</div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   Amazing!
                 </h2>
-                <p className="text-gray-600 mb-6">You've earned rewards!</p>
+                <p className="text-gray-600 mb-4">You've earned rewards!</p>
 
-                <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6 mb-6">
-                  <div className="space-y-3">
+                <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-4 mb-4">
+                  <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg">Plastic Bottles:</span>
-                      <span className="font-bold text-xl">
+                      <span className="text-base">Plastic Bottles:</span>
+                      <span className="font-bold text-lg">
                         {sessionStats?.plastic || 0}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-lg">Aluminum Cans :</span>
-                      <span className="font-bold text-xl">
+                      <span className="text-base">Aluminum Cans :</span>
+                      <span className="font-bold text-lg">
                         {sessionStats?.cans || 0}
                       </span>
                     </div>
-                    <div className="border-t pt-3 flex justify-between items-center">
-                      <span className="text-xl font-bold">⭐ Points:</span>
-                      <span className="font-bold text-3xl text-purple-600">
+                    <div className="border-t pt-2 flex justify-between items-center">
+                      <span className="text-lg font-bold">⭐ Points:</span>
+                      <span className="font-bold text-2xl text-purple-600">
                         +{sessionStats?.points || 0}
                       </span>
                     </div>
@@ -518,9 +518,9 @@ const ReverseVendingMachine = () => {
                     printVoucherRequest(voucherData);
                     setShowVoucher(false);
                   }}
-                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-2xl font-bold text-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-2xl font-bold text-lg hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
                 >
-                  <Printer className="w-6 h-6" />
+                  <Printer className="w-4 h-4" />
                   <span>🎫 Print My Voucher!</span>
                 </button>
               </div>
