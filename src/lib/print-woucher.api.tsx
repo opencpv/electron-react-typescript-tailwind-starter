@@ -1,5 +1,3 @@
-import axios from "axios";
-
 interface PrintWoucherProps {
   sessionId: string;
   bottles: number;
@@ -9,7 +7,7 @@ const printVoucherRequest = async (data: PrintWoucherProps) => {
   const myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
-  let payload = JSON.stringify({
+  const payload = JSON.stringify({
     phone: data.sessionId,
     bottles: data.bottles,
     cans: data.cans,

@@ -3,7 +3,7 @@ import { Recycle, Printer, Sparkles, Zap, Star } from "lucide-react";
 import printVoucherRequest from "./lib/print-woucher.api";
 import { io } from "socket.io-client";
 import { useAssets } from "./hooks/useAssets";
-
+/* eslint-disable */
 interface UserSession {
   totalPoints: number;
   sessions: any[]; // You might want to define a more specific type for sessions
@@ -12,10 +12,6 @@ interface UserSession {
 const ReverseVendingMachine = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [sessionActive, setSessionActive] = useState(false);
-  const [plasticWeight, setPlasticWeight] = useState(2.45);
-  const [canWeight, setCanWeight] = useState(1.87);
-  const [plasticCapacity, setPlasticCapacity] = useState(75);
-  const [canCapacity, setCanCapacity] = useState(68);
   const [sessionStats, setSessionStats] = useState({
     plastic: 0,
     cans: 0,
@@ -440,7 +436,7 @@ const ReverseVendingMachine = () => {
                   onClick={simulateDetection}
                   disabled={
                     detecting ||
-                    (plasticCapacity >= 95 && binCapacity.canBin >= 95)
+                    (binCapacity.plasticBin >= 95 && binCapacity.canBin >= 95)
                   }
                   className={`w-48 h-48 rounded-full text-xl font-bold text-white shadow-2xl transition-all duration-300 ${
                     detecting
@@ -461,7 +457,7 @@ const ReverseVendingMachine = () => {
                   )}
                 </button>
 
-                {plasticCapacity >= 95 && binCapacity.canBin >= 95 && (
+                {binCapacity.plasticBin >= 95 && binCapacity.canBin >= 95 && (
                   <p className="text-white text-base mt-3 bg-red-500 rounded-full px-4 py-2 inline-block">
                     🚨 Machine Full - Contact Staff!
                   </p>
@@ -515,7 +511,7 @@ const ReverseVendingMachine = () => {
 
                 <button
                   onClick={async () => {
-                    printVoucherRequest(voucherData);
+                    await printVoucherRequest(voucherData);
                     setShowVoucher(false);
                   }}
                   className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-2xl font-bold text-lg hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
