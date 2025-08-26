@@ -90,6 +90,70 @@ const ReverseVendingMachine = () => {
       });
     });
     // ...existing code...
+    socket.on("detection", (data) => {
+      setDetecting(true);
+      const detectedClass = data.class;
+      const confidence = data.confidence;
+
+      if (detectedClass == "1 Empty" && confidence !== 1) {
+        setDetecting(true);
+      } else if (detectedClass == "1 Empty" && confidence === 1) {
+        setDetecting(false);
+        // Handle case where detection is confident
+      } else if (detectedClass == "2 bottle" || detectedClass == "0 can") {
+        setDetecting(true);
+
+        if (!showVoucher) {
+          setTimeout(() => {
+            const isPlastic = detectedClass === "2 bottle";
+            const weight = isPlastic ? 0.025 : 0.015;
+            const points = isPlastic ? 5 : 8;
+            const maxCapacityKg = 10; // adjust if your bin max is different
+
+            setWeights((prev) => {
+              let newPlastic = prev.plasticBin;
+              let newCan = prev.canBin;
+              if (isPlastic && binCapacity.plasticBin < 95) {
+                newPlastic = Math.round((prev.plasticBin + weight) * 100) / 100;
+                setSessionStats((prevStats) => ({
+                  ...prevStats,
+                  plastic: prevStats.plastic + 1,
+                  points: prevStats.points + points,
+                }));
+              } else if (!isPlastic && binCapacity.canBin < 95) {
+                newCan = Math.round((prev.canBin + weight) * 100) / 100;
+                setSessionStats((prevStats) => ({
+                  ...prevStats,
+                  cans: prevStats.cans + 1,
+                  points: prevStats.points + points,
+                }));
+              }
+              // Update binCapacity based on new weights
+              setbinCapacity({
+                plasticBin: Math.min(
+                  100,
+                  Math.round((newPlastic / maxCapacityKg) * 100) || 0
+                ),
+                canBin:
+                  Math.min(100, Math.round((newCan / maxCapacityKg) * 100)) ||
+                  0,
+              });
+              return {
+                plasticBin: newPlastic,
+                canBin: newCan,
+              };
+            });
+
+            // Celebration effect
+            setCelebration(true);
+            setTimeout(() => setCelebration(false), 1000);
+
+            setDetecting(false);
+          }, 1500);
+        }
+      }
+      // console.log("Detection data received:", data);
+    });
 
     socket.on("capacity", (data) => {
       setbinCapacity(() => ({
