@@ -326,7 +326,7 @@ const ReverseVendingMachine = () => {
         </div>
       )}
 
-      <div className="relative z-10 p-3 h-screen grid grid-cols-2 w-full">
+      <div className="relative z-10 p-3 h-screen grid grid-cols-2 w-full gap-4">
         <div className="flex flex-col justify-center w-full">
           {/* Header */}
           <div className="text-center mb-3 p-3">
@@ -352,7 +352,7 @@ const ReverseVendingMachine = () => {
                 <div className="text-2xl font-black text-blue-600">
                   {weights.plasticBin}kg
                 </div>
-                <div className="text-sm font-bold text-gray-600">
+                <div className="text-xsfont-bold text-gray-600">
                   Plastic bottles recycled
                 </div>
               </div>
@@ -367,7 +367,7 @@ const ReverseVendingMachine = () => {
                 <div className="text-2xl font-black text-yellow-600">
                   {weights.canBin}kg
                 </div>
-                <div className="text-sm font-bold text-gray-600">
+                <div className="text-xsfont-bold text-gray-600">
                   Aluminum cans recycled
                 </div>
               </div>
@@ -432,7 +432,7 @@ const ReverseVendingMachine = () => {
                   className={`bg-gradient-to-br ${reward.color} rounded-2xl p-3 text-center text-white shadow-xl transform hover:scale-105 transition-transform`}
                 >
                   <div className="text-lg font-bold mb-1">{reward.points}</div>
-                  <div className="text-sm font-medium">{reward.name}</div>
+                  <div className="text-xsfont-medium">{reward.name}</div>
                 </div>
               ))}
             </div>
@@ -469,7 +469,7 @@ const ReverseVendingMachine = () => {
               {/* Session Info */}
               <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-4 text-center shadow-2xl">
                 <div className="text-2xl mb-2">♻️ Active Session</div>
-                <div className="text-sm font-mono bg-gray-100 p-2 rounded-lg inline-block">
+                <div className="text-xsfont-mono bg-gray-100 p-2 rounded-lg inline-block">
                   {currentSessionId}
                 </div>
                 <div className="mt-2 text-gray-600">
@@ -483,19 +483,19 @@ const ReverseVendingMachine = () => {
                   <div className="text-3xl font-bold mb-2">
                     {sessionStats.plastic}
                   </div>
-                  <div className="text-base">Plastic bottle</div>
+                  <div className="text-sm">Plastic bottle</div>
                 </div>
                 <div className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl p-4 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
                   <div className="text-3xl font-bold mb-2">
                     {sessionStats.cans}
                   </div>
-                  <div className="text-base">Alumuminum can</div>
+                  <div className="text-sm">Alumuminum can</div>
                 </div>
                 <div className="bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl p-4 text-center text-white shadow-xl transform hover:scale-105 transition-transform">
                   <div className="text-3xl font-bold mb-2">
                     {sessionStats.points}
                   </div>
-                  <div className="text-base">⭐ Points</div>
+                  <div className="text-sm">⭐ Points</div>
                 </div>
               </div>
 
@@ -527,7 +527,7 @@ const ReverseVendingMachine = () => {
                 </button>
 
                 {binCapacity.plasticBin >= 95 && binCapacity.canBin >= 95 && (
-                  <p className="text-white text-base mt-3 bg-red-500 rounded-full px-4 py-2 inline-block">
+                  <p className="text-white text-sm mt-3 bg-red-500 rounded-full px-4 py-2 inline-block">
                     🚨 Machine Full - Contact Staff!
                   </p>
                 )}
@@ -558,13 +558,13 @@ const ReverseVendingMachine = () => {
                 <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-4 mb-4">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-base">Plastic Bottles:</span>
+                      <span className="text-sm">Plastic Bottles:</span>
                       <span className="font-bold text-lg">
                         {sessionStats?.plastic || 0}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-base">Aluminum Cans :</span>
+                      <span className="text-sm">Aluminum Cans :</span>
                       <span className="font-bold text-lg">
                         {sessionStats?.cans || 0}
                       </span>
