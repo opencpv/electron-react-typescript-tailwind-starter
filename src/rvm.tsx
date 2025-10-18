@@ -462,6 +462,23 @@ const ReverseVendingMachine = () => {
                   ♻️ Start Recycling!
                 </button>
               </div>
+              <div className="flex gap-2 items-center justify-center mt-6">
+                <img
+                  src={assets.images.kma}
+                  alt="KMA Logo"
+                  className="mt-6 mx-auto w-32 h-auto"
+                />
+                <img
+                  src={assets.images.knustshs}
+                  alt="KMA Logo"
+                  className="mt-6 mx-auto w-32 h-auto"
+                />
+                <img
+                  src={assets.images.bloomberg}
+                  alt="KMA Logo"
+                  className="mt-6 mx-auto w-32 h-auto"
+                />
+              </div>
             </div>
           ) : (
             /* Active Session */
@@ -582,6 +599,9 @@ const ReverseVendingMachine = () => {
                   onClick={async () => {
                     await printVoucherRequest(voucherData);
                     setShowVoucher(false);
+                    setStatus("idle");
+                    setCurrentSessionId(null);
+                    setSessionActive(false);
                   }}
                   className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-2xl font-bold text-lg hover:from-green-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
                 >
